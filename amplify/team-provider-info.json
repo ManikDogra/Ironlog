@@ -1,22 +1,19 @@
 {
   "dev": {
     "awscloudformation": {
-      "AuthRoleName": "amplify-gymlogfrontend-dev-6bb2d-authRole",
-      "UnauthRoleArn": "arn:aws:iam::905418419266:role/amplify-gymlogfrontend-dev-6bb2d-unauthRole",
-      "AuthRoleArn": "arn:aws:iam::905418419266:role/amplify-gymlogfrontend-dev-6bb2d-authRole",
+      "AuthRoleName": "amplify-ironlog-dev-97a8e-authRole",
+      "UnauthRoleArn": "arn:aws:iam::706671333756:role/amplify-ironlog-dev-97a8e-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::706671333756:role/amplify-ironlog-dev-97a8e-authRole",
       "Region": "ap-south-1",
-      "DeploymentBucketName": "amplify-gymlogfrontend-dev-6bb2d-deployment",
-      "UnauthRoleName": "amplify-gymlogfrontend-dev-6bb2d-unauthRole",
-      "StackName": "amplify-gymlogfrontend-dev-6bb2d",
-      "StackId": "arn:aws:cloudformation:ap-south-1:905418419266:stack/amplify-gymlogfrontend-dev-6bb2d/5b6d4890-72ae-11f0-ad69-02745a8db149",
-      "AmplifyAppId": "d37f3hygyuaq4s"
+      "DeploymentBucketName": "amplify-ironlog-dev-97a8e-deployment",
+      "UnauthRoleName": "amplify-ironlog-dev-97a8e-unauthRole",
+      "StackName": "amplify-ironlog-dev-97a8e",
+      "StackId": "arn:aws:cloudformation:ap-south-1:706671333756:stack/amplify-ironlog-dev-97a8e/ddb2cd30-931e-11f0-b809-0aed987d2907",
+      "AmplifyAppId": "d1ooh0nczm0urv"
     },
     "categories": {
-      "api": {
-        "gymlogfrontend": {}
-      },
       "auth": {
-        "gymlogfrontendb3ab3a80": {}
+        "ironloga69da5b0": {}
       }
     }
   }

@@ -6,7 +6,7 @@ export default function Navbar() {
       <div className="max-w-5xl mx-auto flex space-x-4">
         <Link to="/" className="hover:underline">Home</Link>
         <Link to="/about" className="hover:underline">About</Link>
-        <Link to="/log" className="hover:underline">Workout Log</Link>
+  <Link to="/workout" className="hover:underline">Workout Log</Link>
 
       </div>
     </nav>

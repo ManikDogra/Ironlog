@@ -1,10 +1,10 @@
 {
   "version": "1",
   "cognitoConfig": {
-    "identityPoolName": "gymlogfrontendb3ab3a80_identitypool_b3ab3a80",
+    "identityPoolName": "ironloga69da5b0_identitypool_a69da5b0",
     "allowUnauthenticatedIdentities": false,
-    "resourceNameTruncated": "gymlogb3ab3a80",
-    "userPoolName": "gymlogfrontendb3ab3a80_userpool_b3ab3a80",
+    "resourceNameTruncated": "ironloa69da5b0",
+    "userPoolName": "ironloga69da5b0_userpool_a69da5b0",
     "autoVerifiedAttributes": [
       "email"
     ],
@@ -31,10 +31,10 @@
     "userpoolClientReadAttributes": [
       "email"
     ],
-    "userpoolClientLambdaRole": "gymlogb3ab3a80_userpoolclient_lambda_role",
+    "userpoolClientLambdaRole": "ironloa69da5b0_userpoolclient_lambda_role",
     "userpoolClientSetAttributes": false,
-    "sharedId": "b3ab3a80",
-    "resourceName": "gymlogfrontendb3ab3a80",
+    "sharedId": "a69da5b0",
+    "resourceName": "ironloga69da5b0",
     "authSelections": "identityPoolAndUserPool",
     "useDefault": "default",
     "usernameAttributes": [

@@ -1,24 +1,6 @@
 {
-  "api": {
-    "gymlogfrontend": {
-      "dependsOn": [],
-      "output": {
-        "authConfig": {
-          "additionalAuthenticationProviders": [],
-          "defaultAuthentication": {
-            "apiKeyConfig": {
-              "apiKeyExpirationDays": 7
-            },
-            "authenticationType": "API_KEY"
-          }
-        }
-      },
-      "providerPlugin": "awscloudformation",
-      "service": "AppSync"
-    }
-  },
   "auth": {
-    "gymlogfrontendb3ab3a80": {
+    "ironloga69da5b0": {
       "customAuth": false,
       "dependsOn": [],
       "frontendAuthConfig": {

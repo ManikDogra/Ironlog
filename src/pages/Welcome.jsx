@@ -1,5 +1,8 @@
 import React from "react";
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faFacebook, faTwitter, faInstagram, faYoutube } from "@fortawesome/free-brands-svg-icons";
 
 export default function Welcome() {
   return (
@@ -21,20 +24,24 @@ export default function Welcome() {
             IRONLOG
           </motion.span>
           <div className="flex gap-4">
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="px-4 py-2 hover:underline transition-all duration-300"
-            >
-              Login
-            </motion.button>
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="px-4 py-2 border border-black hover:bg-black hover:text-white transition-all duration-300"
-            >
-              Signup
-            </motion.button>
+            <Link to="/login">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="px-4 py-2 hover:underline transition-all duration-300"
+              >
+                Login
+              </motion.button>
+            </Link>
+            <Link to="/signup">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="px-4 py-2 border border-black hover:bg-black hover:text-white transition-all duration-300"
+              >
+                Signup
+              </motion.button>
+            </Link>
           </div>
         </div>
       </motion.header>
@@ -59,13 +66,15 @@ export default function Welcome() {
             Track your fitness journey, set goals, and crush your personal
             records with the most powerful gym tracking app.
           </motion.p>
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="px-6 py-3 border border-black hover:bg-black hover:text-white transition-all duration-300"
-          >
-            Start Your Journey
-          </motion.button>
+          <Link to="/signup">
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="px-6 py-3 border border-black hover:bg-black hover:text-white transition-all duration-300"
+            >
+              Start Your Journey
+            </motion.button>
+          </Link>
         </div>
       </section>
 
@@ -149,13 +158,15 @@ export default function Welcome() {
             Join thousands of fitness enthusiasts who are tracking their
             progress and achieving their goals with IronLog.
           </p>
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="px-6 py-3 border border-black hover:bg-black hover:text-white transition-all duration-300"
-          >
-            Get Started For Free
-          </motion.button>
+          <Link to="/signup">
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="px-6 py-3 border border-black hover:bg-black hover:text-white transition-all duration-300"
+            >
+              Get Started For Free
+            </motion.button>
+          </Link>
         </div>
       </motion.section>
 
@@ -171,16 +182,16 @@ export default function Welcome() {
           <div className="text-xl font-normal mb-8">IRONLOG</div>
           <div className="flex justify-center gap-8 mb-8">
             <a href="#" className="text-gray-400 hover:text-black transition-colors">
-              <i className="fa-brands fa-facebook text-xl"></i>
+              <FontAwesomeIcon icon={faFacebook} className="text-xl" />
             </a>
             <a href="#" className="text-gray-400 hover:text-black transition-colors">
-              <i className="fa-brands fa-twitter text-xl"></i>
+              <FontAwesomeIcon icon={faTwitter} className="text-xl" />
             </a>
             <a href="#" className="text-gray-400 hover:text-black transition-colors">
-              <i className="fa-brands fa-instagram text-xl"></i>
+              <FontAwesomeIcon icon={faInstagram} className="text-xl" />
             </a>
             <a href="#" className="text-gray-400 hover:text-black transition-colors">
-              <i className="fa-brands fa-youtube text-xl"></i>
+              <FontAwesomeIcon icon={faYoutube} className="text-xl" />
             </a>
           </div>
           <div className="text-gray-600 mb-4">

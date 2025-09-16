@@ -5,7 +5,7 @@ import About from "./pages/About";
 import WorkoutLog from "./pages/WorkoutLog";
 import Welcome from "./pages/Welcome";
 import Login from "./pages/Login";
-import signup from "./pages/signup";
+import Signup from "./pages/Signup";
 
 function App() {
   const location = useLocation();
@@ -21,7 +21,7 @@ function App() {
           <Route path="/about" element={<About />} />
           <Route path="/workout" element={<WorkoutLog />} />
           <Route path="/login" element={<Login />} />
-
+          <Route path="/signup" element={<Signup />} />
         </Routes>
       </div>
     </div>

@@ -1,14 +1,21 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { signIn } from "@aws-amplify/auth";
 
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Dummy login logic for now
-    console.log("Login clicked with:", { email, password });
+    try {
+  await signIn({ username: email, password });
+      alert("Login successful!");
+      navigate("/dashboard"); // Change this to the page you want after login
+    } catch (err) {
+      alert(err.message || "Error logging in");
+    }
   };
 
   return (

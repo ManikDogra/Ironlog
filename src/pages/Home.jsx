@@ -1,6 +1,6 @@
 import { motion, useReducedMotion } from "framer-motion";
 
-export default function Welcome() {
+export default function Home() {
   const prefersReducedMotion = useReducedMotion();
 
   const fadeUp = {
