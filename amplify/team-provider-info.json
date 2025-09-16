@@ -1,0 +1,23 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-gymlogfrontend-dev-6bb2d-authRole",
+      "UnauthRoleArn": "arn:aws:iam::905418419266:role/amplify-gymlogfrontend-dev-6bb2d-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::905418419266:role/amplify-gymlogfrontend-dev-6bb2d-authRole",
+      "Region": "ap-south-1",
+      "DeploymentBucketName": "amplify-gymlogfrontend-dev-6bb2d-deployment",
+      "UnauthRoleName": "amplify-gymlogfrontend-dev-6bb2d-unauthRole",
+      "StackName": "amplify-gymlogfrontend-dev-6bb2d",
+      "StackId": "arn:aws:cloudformation:ap-south-1:905418419266:stack/amplify-gymlogfrontend-dev-6bb2d/5b6d4890-72ae-11f0-ad69-02745a8db149",
+      "AmplifyAppId": "d37f3hygyuaq4s"
+    },
+    "categories": {
+      "api": {
+        "gymlogfrontend": {}
+      },
+      "auth": {
+        "gymlogfrontendb3ab3a80": {}
+      }
+    }
+  }
+}
