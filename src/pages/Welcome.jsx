@@ -18,7 +18,7 @@ export default function Welcome() {
             transition={{ delay: 0.4 }}
             className="text-2xl font-bold"
           >
-            IRONLOG
+            IRONshlong
           </motion.span>
           <div className="flex gap-4">
             <motion.button
