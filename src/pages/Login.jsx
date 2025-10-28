@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { signIn } from "@aws-amplify/auth";
+import { signIn, signOut } from "@aws-amplify/auth";
 import { motion } from "framer-motion";
 
 export default function Login() {
@@ -11,10 +11,19 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await signIn({ username: email, password });
+      // 🧩 Always ensure no previous session exists
+      await signOut().catch(() => {});
+
+      // AWS Cognito uses "username" field even if it’s actually the email
+      const user = await signIn({
+        username: email,
+        password: password,
+      });
+
       alert("Login successful!");
-      navigate("/dashboard"); // Update to your desired post-login page
+      navigate("/dashboard");
     } catch (err) {
+      console.error("Login error:", err);
       alert(err.message || "Error logging in");
     }
   };
@@ -42,7 +51,8 @@ export default function Login() {
           transition={{ duration: 0.8, delay: 0.3 }}
           className="text-gray-600 text-lg text-center max-w-sm"
         >
-          Track. Train. Transform.  
+          Track. Train. Transform.
+          <br />
           Log in to your account and continue your fitness journey.
         </motion.p>
       </motion.div>

@@ -5,6 +5,9 @@ import WorkoutLog from "./pages/WorkoutLog";
 import Welcome from "./pages/Welcome";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
+import ConfirmSignup from "./pages/ConfirmSignup";
+import Dashboard from "./pages/Dashboard";
+
 
 function App() {
   return (
@@ -17,6 +20,10 @@ function App() {
           <Route path="/workout" element={<WorkoutLog />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
+          <Route path="/confirm-signup" element={<ConfirmSignup />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+
+
         </Routes>
       </div>
     </div>
