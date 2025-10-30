@@ -4,13 +4,13 @@ import WorkoutLog from "./pages/WorkoutLog";
 import Welcome from "./pages/Welcome";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
-import ConfirmSignup from "./pages/ConfirmSignup";
 import Dashboard from "./pages/Dashboard";
-
+import PrivateRoute from "./components/PrivateRoute";
+import { AuthProvider } from "./context/AuthContext"; // ✅ added import
 
 function App() {
   return (
-    <div>
+    <AuthProvider>
       <div className="p-4">
         <Routes>
           <Route path="/" element={<Welcome />} />
@@ -18,11 +18,19 @@ function App() {
           <Route path="/workout" element={<WorkoutLog />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
-          <Route path="/confirm-signup" element={<ConfirmSignup />} />
-          <Route path="/dashboard" element={<Dashboard />} />
+
+          {/* ✅ Protected Route */}
+          <Route
+            path="/dashboard"
+            element={
+              <PrivateRoute>
+                <Dashboard />
+              </PrivateRoute>
+            }
+          />
         </Routes>
       </div>
-    </div>
+    </AuthProvider>
   );
 }
 
