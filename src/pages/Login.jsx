@@ -14,6 +14,8 @@ export default function Login() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const navigate = useNavigate();
 const { login } = useAuth();
+  // Ensure we have a fallback API URL during development
+  const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:5000";
 
   // 🟢 Handle Login (connected to backend)
   // 🟢 Handle Login (connected to backend)
@@ -22,7 +24,7 @@ const handleLogin = async (e) => {
   setStatus("");
 
   try {
-    const res = await fetch(`${import.meta.env.VITE_API_URL}/auth/login`, {
+    const res = await fetch(`${API_URL}/auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -30,8 +32,14 @@ const handleLogin = async (e) => {
         password,
       }),
     });
-
-    const data = await res.json();
+    // parse response safely (handle empty/non-JSON responses)
+    const text = await res.text();
+    let data;
+    try {
+      data = text ? JSON.parse(text) : {};
+    } catch (err) {
+      data = { error: text };
+    }
 
     if (res.ok) {
       // ✅ Save token securely in localStorage
@@ -57,7 +65,7 @@ const handleLogin = async (e) => {
     e.preventDefault();
     setStatus("");
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/auth/forgot`, {
+      const res = await fetch(`${API_URL}/auth/forgot`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username: email }),
@@ -83,12 +91,18 @@ const handleLogin = async (e) => {
       return;
     }
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/auth/confirm-reset`, {
+      const res = await fetch(`${API_URL}/auth/confirm-reset`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username: email, confirmationCode: otp, newPassword }),
       });
-      const data = await res.json();
+      const text = await res.text();
+      let data;
+      try {
+        data = text ? JSON.parse(text) : {};
+      } catch (err) {
+        data = { error: text };
+      }
       if (res.ok) {
         setStatus("passwordChanged");
       } else {
