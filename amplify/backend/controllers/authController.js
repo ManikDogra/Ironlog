@@ -4,12 +4,48 @@ import {
   InitiateAuthCommand,
   ConfirmSignUpCommand,
 } from "@aws-sdk/client-cognito-identity-provider";
+import {
+  ForgotPasswordCommand,
+  ConfirmForgotPasswordCommand,
+} from "@aws-sdk/client-cognito-identity-provider";
 import dotenv from "dotenv";
 dotenv.config();
 
 const client = new CognitoIdentityProviderClient({
   region: process.env.COGNITO_REGION,
 });
+
+export const forgotPassword = async (req, res) => {
+  const { username } = req.body;
+  try {
+    const command = new ForgotPasswordCommand({
+      ClientId: process.env.COGNITO_CLIENT_ID,
+      Username: username,
+    });
+    const response = await client.send(command);
+    res.json({ message: "Code sent", details: response.CodeDeliveryDetails });
+  } catch (err) {
+    console.error("Forgot password error:", err);
+    res.status(500).json({ error: err.message });
+  }
+};
+
+export const confirmForgotPassword = async (req, res) => {
+  const { username, confirmationCode, newPassword } = req.body;
+  try {
+    const command = new ConfirmForgotPasswordCommand({
+      ClientId: process.env.COGNITO_CLIENT_ID,
+      Username: username,
+      ConfirmationCode: confirmationCode,
+      Password: newPassword,
+    });
+    await client.send(command);
+    res.json({ message: "Password reset successful" });
+  } catch (err) {
+    console.error("Confirm forgot password error:", err);
+    res.status(500).json({ error: err.message });
+  }
+};
 
 export const signup = async (req, res) => {
   const { username, password, email } = req.body;

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { resetPassword, confirmResetPassword } from "@aws-amplify/auth";
+// Using backend endpoints for password reset instead of Amplify client here
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "../context/AuthContext";
 
@@ -22,7 +22,7 @@ const handleLogin = async (e) => {
   setStatus("");
 
   try {
-    const res = await fetch("http://localhost:5000/auth/login", {
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -57,9 +57,18 @@ const handleLogin = async (e) => {
     e.preventDefault();
     setStatus("");
     try {
-      await resetPassword({ username: email });
-      setStep("verify");
-      setStatus("OTP sent to your email.");
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/auth/forgot`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username: email }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setStep("verify");
+        setStatus("OTP sent to your email.");
+      } else {
+        setStatus(data.error || "Error sending OTP");
+      }
     } catch (err) {
       setStatus(err.message || "Error sending OTP");
     }
@@ -74,8 +83,18 @@ const handleLogin = async (e) => {
       return;
     }
     try {
-      await confirmResetPassword({ username: email, confirmationCode: otp, newPassword });
-      setStatus("passwordChanged");
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/auth/confirm-reset`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username: email, confirmationCode: otp, newPassword }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setStatus("passwordChanged");
+      } else {
+        setStatus(data.error || "Error resetting password");
+        return;
+      }
       setTimeout(() => {
         setStep("login");
         setStatus("");
@@ -221,7 +240,41 @@ const handleLogin = async (e) => {
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ duration: 0.4 }}
               >
-                {/* ... same as before ... */}
+                <h2 className="text-3xl font-normal text-center mb-8">Reset Password</h2>
+
+                <form className="space-y-6" onSubmit={handleForgotPassword}>
+                  <div>
+                    <label className="block text-sm text-gray-600 mb-2">Email</label>
+                    <input
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="Enter your email"
+                      required
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:ring-black focus:outline-none transition"
+                    />
+                  </div>
+
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.97 }}
+                    type="submit"
+                    className="w-full py-2.5 border border-black hover:bg-black hover:text-white rounded-lg transition-all duration-300"
+                  >
+                    Send Code
+                  </motion.button>
+                </form>
+
+                <AnimatePresence>{StatusBox()}</AnimatePresence>
+
+                <div className="flex justify-between mt-6 text-sm text-gray-600">
+                  <button onClick={() => setStep("login")} className="hover:underline">
+                    Back to Login
+                  </button>
+                  <button onClick={() => setStep("verify")} className="hover:underline">
+                    I have a code
+                  </button>
+                </div>
               </motion.div>
             )}
 
@@ -233,7 +286,65 @@ const handleLogin = async (e) => {
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ duration: 0.4 }}
               >
-                {/* ... same as before ... */}
+                <h2 className="text-3xl font-normal text-center mb-8">Enter Verification Code</h2>
+
+                <form className="space-y-6" onSubmit={handleConfirmReset}>
+                  <div>
+                    <label className="block text-sm text-gray-600 mb-2">Verification Code</label>
+                    <input
+                      type="text"
+                      value={otp}
+                      onChange={(e) => setOtp(e.target.value)}
+                      placeholder="Enter verification code"
+                      required
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:ring-black focus:outline-none transition"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm text-gray-600 mb-2">New Password</label>
+                    <input
+                      type="password"
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      placeholder="Enter new password"
+                      required
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:ring-black focus:outline-none transition"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm text-gray-600 mb-2">Confirm Password</label>
+                    <input
+                      type="password"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      placeholder="Confirm new password"
+                      required
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:ring-black focus:outline-none transition"
+                    />
+                  </div>
+
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.97 }}
+                    type="submit"
+                    className="w-full py-2.5 border border-black hover:bg-black hover:text-white rounded-lg transition-all duration-300"
+                  >
+                    Change Password
+                  </motion.button>
+                </form>
+
+                <div className="flex justify-between mt-6 text-sm text-gray-600">
+                  <button onClick={() => setStep("forgot")} className="hover:underline">
+                    Resend verification code
+                  </button>
+                  <button onClick={() => setStep("login")} className="hover:underline">
+                    Back to Login
+                  </button>
+                </div>
+
+                <AnimatePresence>{StatusBox()}</AnimatePresence>
               </motion.div>
             )}
           </AnimatePresence>

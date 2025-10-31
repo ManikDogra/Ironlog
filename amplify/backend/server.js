@@ -3,9 +3,13 @@
 import express from 'express';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import authRoutes from "./routes/authRoutes.js";
 import cors from "cors";
-dotenv.config();
+// Load the .env file located in this folder (amplify/backend/.env)
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+dotenv.config({ path: path.join(__dirname, '.env') });
 
 const app = express();
 
