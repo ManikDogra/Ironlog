@@ -6,6 +6,8 @@ import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import authRoutes from "./routes/authRoutes.js";
+import profileRoutes from "./routes/profileRoutes.js";
+import workoutRoutes from "./routes/workoutRoutes.js";
 import cors from "cors";
 // Load the .env file located in this folder (amplify/backend/.env)
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -24,6 +26,8 @@ app.use(
 );
 
 app.use("/auth", authRoutes);
+app.use("/profile", profileRoutes);
+app.use("/workouts", workoutRoutes);
 
 
 // MongoDB connection

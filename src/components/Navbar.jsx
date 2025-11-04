@@ -1,22 +1,29 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext"; // ✅ Import context
+import { useState, useRef, useEffect } from "react";
 
 export default function Navbar() {
   const navigate = useNavigate();
-  const { isAuthenticated, logout } = useAuth(); // ✅ Access shared state
+  const { isAuthenticated, logout, profile } = useAuth(); // ✅ Access shared state
+  const [open, setOpen] = useState(false);
+  const ddRef = useRef();
 
   const handleLogout = () => {
-    console.log("Navbar: handleLogout clicked");
-    // Clear client side storage synchronously first so the token is removed immediately
     logout();
-    // Then tell backend to clear any httpOnly cookies (if present). Do not block UI — just try.
-    fetch("http://localhost:5000/auth/logout", {
+    fetch(`${import.meta.env.VITE_API_URL || "http://localhost:5000"}/auth/logout`, {
       method: "POST",
       credentials: "include",
     }).catch((err) => console.warn("logout request failed", err));
-    // Force a full reload to ensure all in-memory state is cleared
     window.location.replace("/login");
   };
+
+  useEffect(() => {
+    const onDoc = (e) => {
+      if (ddRef.current && !ddRef.current.contains(e.target)) setOpen(false);
+    };
+    document.addEventListener("click", onDoc);
+    return () => document.removeEventListener("click", onDoc);
+  }, []);
 
   return (
     <nav className="bg-gray-800 text-white p-4">
@@ -39,15 +46,46 @@ export default function Navbar() {
           )}
         </div>
 
-        {/* Right side actions */}
-        <div className="flex space-x-4">
+        {/* Right side actions: show profile icon when authenticated */}
+        <div className="flex items-center space-x-4" ref={ddRef}>
           {isAuthenticated ? (
-            <button
-              onClick={handleLogout}
-              className="bg-red-600 hover:bg-red-700 px-3 py-1 rounded-md transition"
-            >
-              Logout
-            </button>
+            <div className="relative">
+              <button
+                onClick={() => setOpen((v) => !v)}
+                className="w-10 h-10 rounded-full bg-gray-600 flex items-center justify-center"
+                aria-label="User menu"
+              >
+                {/* simple initials avatar */}
+                <span className="text-sm font-medium">
+                  {profile && profile.name ? profile.name.split(" ")[0][0]?.toUpperCase() : "U"}
+                </span>
+              </button>
+
+              {open && (
+                <div className="absolute right-0 mt-2 w-40 bg-white text-black rounded-md shadow-lg z-50">
+                  <Link
+                    to="/profile"
+                    className="block px-4 py-2 hover:bg-gray-100"
+                    onClick={() => setOpen(false)}
+                  >
+                    Profile
+                  </Link>
+                  <Link
+                    to="/profile-setup"
+                    className="block px-4 py-2 hover:bg-gray-100"
+                    onClick={() => setOpen(false)}
+                  >
+                    Edit Profile
+                  </Link>
+                  <button
+                    onClick={handleLogout}
+                    className="w-full text-left px-4 py-2 hover:bg-gray-100"
+                  >
+                    Logout
+                  </button>
+                </div>
+              )}
+            </div>
           ) : (
             <>
               <Link to="/login" className="hover:underline">

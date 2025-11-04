@@ -4,6 +4,10 @@ const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem("token"));
+  const [profile, setProfile] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  const profileCompleted = !!profile;
 
   useEffect(() => {
     const handleStorageChange = () => {
@@ -13,9 +17,82 @@ export const AuthProvider = ({ children }) => {
     return () => window.removeEventListener("storage", handleStorageChange);
   }, []);
 
+  // If token exists on mount, try to load profile once
+  useEffect(() => {
+    (async () => {
+      const token = localStorage.getItem("token");
+      // ignore unset or invalid-string tokens that can sneak into storage
+      if (!token || token === "undefined" || token === "null") {
+        setLoading(false);
+        return;
+      }
+      try {
+        const res = await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:5000"}/profile`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (res.status === 401) {
+          // token invalid/expired — clear local auth so UI redirects to login
+          console.warn("AuthContext: token invalid, clearing auth");
+          localStorage.removeItem("token");
+          setIsAuthenticated(false);
+          setProfile(null);
+          setLoading(false);
+          return;
+        }
+        if (res.status === 404) {
+          // No profile exists yet for this user. That's expected for new users.
+          setProfile(null);
+          setIsAuthenticated(true);
+          setLoading(false);
+          return;
+        }
+        if (res.ok) {
+          const body = await res.json();
+          setProfile(body.profile || null);
+          setIsAuthenticated(true);
+          setLoading(false);
+        }
+      } catch (e) {
+        // network or other unexpected error — don't spam the console
+        console.debug("AuthContext: load profile failed", e);
+        setLoading(false);
+      }
+    })();
+  }, []);
+
   const login = (token) => {
     localStorage.setItem("token", token);
     setIsAuthenticated(true);
+    // fetch profile after login
+    (async () => {
+      try {
+        const res = await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:5000"}/profile`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (res.status === 404) {
+          // profile not created yet
+          setProfile(null);
+          return;
+        }
+        if (res.ok) {
+          const body = await res.json();
+          setProfile(body.profile || null);
+          // record this login on the server so dashboard streak can be computed
+          try {
+            await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:5000"}/profile/login`, {
+              method: "POST",
+              headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+            });
+          } catch (e) {
+            console.debug("AuthContext: record login failed", e);
+          }
+        } else {
+          setProfile(null);
+        }
+      } catch (e) {
+        console.debug("AuthContext: fetch profile failed", e);
+      }
+    })();
   };
 
   const logout = () => {
@@ -97,10 +174,11 @@ export const AuthProvider = ({ children }) => {
       console.warn("logout: could not fully clear storage", e);
     }
     setIsAuthenticated(false);
+    setProfile(null);
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, login, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, login, logout, profile, setProfile, profileCompleted, loading }}>
       {children}
     </AuthContext.Provider>
   );

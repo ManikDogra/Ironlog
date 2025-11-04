@@ -5,6 +5,8 @@ import Welcome from "./pages/Welcome";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Dashboard from "./pages/Dashboard";
+import ProfileSetup from "./pages/ProfileSetup";
+import ProfilePage from "./pages/ProfilePage";
 import PrivateRoute from "./components/PrivateRoute";
 import { AuthProvider } from "./context/AuthContext"; // ✅ added import
 
@@ -25,6 +27,20 @@ function App() {
             element={
               <PrivateRoute>
                 <Dashboard />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/profile-setup"
+            element={
+              <ProfileSetup />
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              <PrivateRoute>
+                <ProfilePage />
               </PrivateRoute>
             }
           />

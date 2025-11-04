@@ -1,8 +1,8 @@
 import jwt from "jsonwebtoken";
 import jwkToPem from "jwk-to-pem";
 import fetch from "node-fetch";
-import dotenv from "dotenv";
-dotenv.config();
+// import dotenv from "dotenv";
+// dotenv.config();
 
 let pems = null;
 

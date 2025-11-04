@@ -1,7 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { signUp, confirmSignUp, resendSignUpCode } from "@aws-amplify/auth";
 
 export default function Signup() {
   const navigate = useNavigate();
@@ -12,16 +11,38 @@ export default function Signup() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [otp, setOtp] = useState("");
   const [loading, setLoading] = useState(false);
-
-  // statusMessage: text to show; statusType: "", "error", "success", "loading"
   const [statusMessage, setStatusMessage] = useState("");
   const [statusType, setStatusType] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+
+  const [passwordsMatch, setPasswordsMatch] = useState(false);
+
+  useEffect(() => {
+    setPasswordsMatch(password && confirmPassword && password === confirmPassword);
+  }, [password, confirmPassword]);
+
+  const validatePassword = (pwd) => {
+    const minLength = 8;
+    const hasUpper = /[A-Z]/.test(pwd);
+    const hasLower = /[a-z]/.test(pwd);
+    const hasNumber = /\d/.test(pwd);
+    const hasSymbol = /[!@#$%^&*(),.?":{}|<>]/.test(pwd);
+    return pwd.length >= minLength && hasUpper && hasLower && hasNumber && hasSymbol;
+  };
+
+  const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:5000";
 
   const handleSignup = async (e) => {
     e.preventDefault();
     // clear previous
     setStatusMessage("");
     setStatusType("");
+    setPasswordError("");
+
+    if (!validatePassword(password)) {
+      setPasswordError("Password must be at least 8 characters long, include one uppercase letter, one lowercase letter, one number, and one symbol.");
+      return;
+    }
 
     if (password !== confirmPassword) {
       setStatusMessage("Passwords do not match!");
@@ -32,46 +53,69 @@ export default function Signup() {
     setLoading(true);
     setStatusType("loading");
     try {
-      await signUp({
-        username: email,
-        password,
-        options: { userAttributes: { email } },
+      const res = await fetch(`${API_URL}/auth/signup`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          username: email,
+          password,
+          email,
+        }),
       });
-
-      // Show inline success and switch to confirm step
-      setStatusMessage("Signup successful! Check your email for the verification code.");
-      setStatusType("success");
-      setStep("confirm");
+      const data = await res.json();
+      if (res.ok) {
+        // Show inline success and switch to confirm step
+        setStatusMessage("Signup successful! Check your email for the verification code.");
+        setStatusType("success");
+        setStep("confirm");
+      } else {
+        setStatusMessage(data.error || "Error signing up");
+        setStatusType("error");
+      }
     } catch (err) {
-      setStatusMessage(err?.message || "Error signing up");
+      setStatusMessage("Server error. Please try again later.");
       setStatusType("error");
     } finally {
       setLoading(false);
-      // keep status visible (caller can retry); don't clear automatically
     }
   };
 
   const handleConfirm = async (e) => {
     e.preventDefault();
     setStatusMessage("");
-    setStatusType("loading");
-    setLoading(true);
+    setStatusType("");
 
-    try {
-      await confirmSignUp({ username: email, confirmationCode: otp });
-
-      // Success: show inline success message, slightly transparent box already via loading
-      setStatusMessage("✅ Verification successful! Continue to login...");
-      setStatusType("success");
-
-      // wait 2s then redirect
-      setTimeout(() => {
-        navigate("/login");
-      }, 2000);
-    } catch (err) {
-      setStatusMessage(err?.message || "Error confirming account");
+    if (!otp.trim()) {
+      setStatusMessage("Please enter the verification code.");
       setStatusType("error");
-      // revert loading state so user can retry
+      return;
+    }
+
+    setLoading(true);
+    setStatusType("loading");
+    try {
+      const res = await fetch(`${API_URL}/auth/confirm`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          username: email,
+          code: otp,
+        }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setStatusMessage("Account confirmed! You can now log in.");
+        setStatusType("success");
+        // Optionally redirect to login after a delay
+        setTimeout(() => navigate("/login"), 2000);
+      } else {
+        setStatusMessage(data.error || "Error confirming account");
+        setStatusType("error");
+      }
+    } catch (err) {
+      setStatusMessage("Server error. Please try again later.");
+      setStatusType("error");
+    } finally {
       setLoading(false);
     }
   };
@@ -79,12 +123,25 @@ export default function Signup() {
   const handleResend = async () => {
     setStatusMessage("");
     setStatusType("loading");
+    setLoading(true);
     try {
-      await resendSignUpCode({ username: email });
-      setStatusMessage("Verification code resent! Please check your email.");
-      setStatusType("success");
+      const res = await fetch(`${API_URL}/auth/resend`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          username: email,
+        }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setStatusMessage("Verification code resent! Please check your email.");
+        setStatusType("success");
+      } else {
+        setStatusMessage(data.error || "Error resending code");
+        setStatusType("error");
+      }
     } catch (err) {
-      setStatusMessage(err?.message || "Error resending code");
+      setStatusMessage("Server error. Please try again later.");
       setStatusType("error");
     } finally {
       setLoading(false);
@@ -167,6 +224,11 @@ export default function Signup() {
                     required
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:ring-black focus:outline-none transition"
                   />
+                  {passwordError && (
+                    <p className="text-xs text-red-600 mt-1">
+                      {passwordError}
+                    </p>
+                  )}
                 </div>
 
                 {/* Confirm Password */}
@@ -182,6 +244,16 @@ export default function Signup() {
                     required
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:ring-black focus:outline-none transition"
                   />
+                  {confirmPassword && (
+                    <p className={`text-xs mt-1 ${passwordsMatch ? "text-green-600" : "text-red-600"}`}>
+                      {passwordsMatch ? "✓ Passwords match" : "✗ Passwords do not match"}
+                    </p>
+                  )}
+                  {passwordError && (
+                    <p className="text-xs text-red-600 mt-1">
+                      {passwordError}
+                    </p>
+                  )}
                 </div>
 
                 <motion.button

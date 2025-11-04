@@ -1,6 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import { User } from "lucide-react";
 import {
   LineChart,
   Line,
@@ -12,24 +14,91 @@ import {
 } from "recharts";
 
 export default function Dashboard() {
+  const { profile, logout, token } = useAuth();
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   const [showModal, setShowModal] = useState(false);
-  const [workouts, setWorkouts] = useState([
-    { name: "Push Day", date: "Oct 21, 2025", exercises: 5 },
-    { name: "Pull Day", date: "Oct 20, 2025", exercises: 6 },
-    { name: "Leg Day", date: "Oct 18, 2025", exercises: 7 },
-  ]);
+  const [workouts, setWorkouts] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const [newWorkout, setNewWorkout] = useState({
     name: "",
     date: "",
-    exercises: "",
+    exercises: [],
   });
 
+  // Fetch workouts on mount
+  useEffect(() => {
+    if (token) {
+      fetchWorkouts();
+    }
+  }, [token]);
+
+  const fetchWorkouts = async () => {
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:5000"}/workouts`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setWorkouts(data);
+      }
+    } catch (err) {
+      console.error("Fetch workouts error:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Calculate active streak based on daily logins stored in profile.loginDates
+  const calculateStreak = () => {
+    const loginDates = (profile && profile.loginDates) || [];
+    if (!loginDates || loginDates.length === 0) return 0;
+
+    // Build a set of date strings for quick lookup
+    const dateSet = new Set(
+      loginDates.map((d) => new Date(d).toDateString())
+    );
+
+    let streak = 0;
+    let currentDate = new Date();
+
+    while (true) {
+      // Skip Sundays (rest day) — do not break the streak when encountering Sunday
+      if (currentDate.getDay() === 0) {
+        currentDate.setDate(currentDate.getDate() - 1);
+        continue;
+      }
+
+      const dStr = currentDate.toDateString();
+      if (dateSet.has(dStr)) {
+        streak++;
+        currentDate.setDate(currentDate.getDate() - 1);
+      } else {
+        // If user missed a non-Sunday day, streak stops
+        break;
+      }
+    }
+
+    return streak;
+  };
+
   const stats = [
-    { title: "Total Workouts", value: workouts.length },
+    { title: "Total Workouts", value: 0 },
     { title: "Personal Records", value: 8 },
-    { title: "Current Weight", value: "72 kg" },
-    { title: "Active Streak", value: "5 days" },
+    { title: "Current Weight", value: `${profile?.weight || 0} kg` },
+  { title: "Active Streak", value: `${calculateStreak()} days` },
   ];
 
   const progressData = [
@@ -42,12 +111,32 @@ export default function Dashboard() {
     { day: "Sun", weight: 71.7 },
   ];
 
-  const handleAddWorkout = (e) => {
+  const handleAddWorkout = async (e) => {
     e.preventDefault();
     if (!newWorkout.name || !newWorkout.date) return;
-    setWorkouts([newWorkout, ...workouts]);
-    setNewWorkout({ name: "", date: "", exercises: "" });
-    setShowModal(false);
+
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:5000"}/workouts`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          name: newWorkout.name,
+          date: newWorkout.date,
+          exercises: [],
+        }),
+      });
+      if (res.ok) {
+        const addedWorkout = await res.json();
+        setWorkouts([addedWorkout, ...workouts]);
+        setNewWorkout({ name: "", date: "", exercises: [] });
+        setShowModal(false);
+      }
+    } catch (err) {
+      console.error("Add workout error:", err);
+    }
   };
 
   return (
@@ -55,12 +144,35 @@ export default function Dashboard() {
       {/* Header */}
       <header className="sticky top-0 z-20 bg-white border-b border-gray-200 flex justify-between items-center px-6 py-4 shadow-sm">
         <h1 className="text-2xl font-bold tracking-wide">IRONLOG</h1>
-        <Link
-          to="/login"
-          className="text-sm border border-gray-300 px-3 py-1.5 rounded-md hover:bg-black hover:text-white transition"
-        >
-          Logout
-        </Link>
+        <div className="relative" ref={dropdownRef}>
+          <button
+            onClick={() => setDropdownOpen(!dropdownOpen)}
+            className="flex items-center space-x-2 text-sm border border-gray-300 px-3 py-1.5 rounded-md hover:bg-gray-100 transition"
+          >
+            <User className="w-5 h-5" />
+            <span>{profile?.name || "User"}</span>
+          </button>
+          {dropdownOpen && (
+            <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-10">
+              <Link
+                to="/profile"
+                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                onClick={() => setDropdownOpen(false)}
+              >
+                Profile
+              </Link>
+              <button
+                onClick={() => {
+                  logout();
+                  setDropdownOpen(false);
+                }}
+                className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+              >
+                Logout
+              </button>
+            </div>
+          )}
+        </div>
       </header>
 
       {/* Main Content */}
@@ -108,116 +220,7 @@ export default function Dashboard() {
             </LineChart>
           </ResponsiveContainer>
         </motion.div>
-
-        {/* Recent Workouts */}
-        <motion.div
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          className="bg-white rounded-xl border border-gray-100 shadow-sm p-6"
-        >
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-semibold">Recent Workouts</h2>
-            <button
-              onClick={() => setShowModal(true)}
-              className="border border-black text-black px-3 py-1.5 rounded-md hover:bg-black hover:text-white transition"
-            >
-              ➕ Add Workout
-            </button>
-          </div>
-          <div className="space-y-3">
-            {workouts.map((workout, i) => (
-              <div
-                key={i}
-                className="flex justify-between items-center border-b border-gray-100 pb-3 last:border-0"
-              >
-                <div>
-                  <h3 className="font-medium">{workout.name}</h3>
-                  <p className="text-gray-500 text-sm">{workout.date}</p>
-                </div>
-                <span className="text-gray-600 text-sm">
-                  {workout.exercises || 0} exercises
-                </span>
-              </div>
-            ))}
-          </div>
-        </motion.div>
       </motion.div>
-
-      {/* Add Workout Modal */}
-      {showModal && (
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex justify-center items-center z-50">
-          <motion.div
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            className="bg-white rounded-xl p-8 w-11/12 max-w-md shadow-lg"
-          >
-            <h2 className="text-2xl font-semibold mb-4 text-center">
-              Add New Workout
-            </h2>
-            <form onSubmit={handleAddWorkout} className="space-y-4">
-              <div>
-                <label className="block text-sm text-gray-600 mb-1">
-                  Workout Name
-                </label>
-                <input
-                  type="text"
-                  value={newWorkout.name}
-                  onChange={(e) =>
-                    setNewWorkout({ ...newWorkout, name: e.target.value })
-                  }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:ring-black focus:outline-none"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm text-gray-600 mb-1">Date</label>
-                <input
-                  type="date"
-                  value={newWorkout.date}
-                  onChange={(e) =>
-                    setNewWorkout({ ...newWorkout, date: e.target.value })
-                  }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:ring-black focus:outline-none"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm text-gray-600 mb-1">
-                  Exercises Count
-                </label>
-                <input
-                  type="number"
-                  value={newWorkout.exercises}
-                  onChange={(e) =>
-                    setNewWorkout({
-                      ...newWorkout,
-                      exercises: parseInt(e.target.value),
-                    })
-                  }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:ring-black focus:outline-none"
-                  placeholder="e.g. 5"
-                />
-              </div>
-              <div className="flex justify-end space-x-3 mt-4">
-                <button
-                  type="button"
-                  onClick={() => setShowModal(false)}
-                  className="px-4 py-2 rounded-lg border border-gray-300 hover:bg-gray-100 transition"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-4 py-2 rounded-lg bg-black text-white hover:bg-gray-800 transition"
-                >
-                  Add
-                </button>
-              </div>
-            </form>
-          </motion.div>
-        </div>
-      )}
     </div>
   );
 }
