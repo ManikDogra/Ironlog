@@ -22,10 +22,20 @@ export const getTodayWorkout = async (req, res) => {
     const end = new Date(start);
     end.setDate(end.getDate() + 1);
 
-      // Only return today's active (not-yet-completed) workout so users can
-      // create a new one after completing the previous workout.
-    const workout = await Workout.findOne({ userSub, date: { $gte: start, $lt: end }, completed: { $ne: true } }).sort({ date: -1 }).lean();
-    if (!workout) return res.status(404).json({ error: 'No workout for today' });
+    // Only return today's active (not-yet-completed) workout so users can
+    // create a new one after completing the previous workout.
+    const workout = await Workout.findOne({ 
+      userSub, 
+      date: { $gte: start, $lt: end },
+      completed: { $ne: true }
+    }).sort({ date: -1 }).lean();
+    
+    if (!workout) {
+      console.log(`No workout found for userSub: ${userSub}, date range: ${start} to ${end}`);
+      return res.status(404).json({ error: 'No workout for today' });
+    }
+    
+    console.log(`Found today's workout: ${workout._id}, completed: ${workout.completed}`);
     res.json(workout);
   } catch (err) {
     console.error('Get today workout error:', err);
@@ -62,11 +72,11 @@ export const createWorkout = async (req, res) => {
       if (ex.name.length > 100) {
         return res.status(400).json({ error: `Exercise name at index ${i} must be 100 characters or less` });
       }
-      // exercise name should only contain letters and spaces
+      // exercise name should only contain letters, spaces, and hyphens
       const exNameTrim = String(ex.name).trim();
-      const exNameRegex = /^[A-Za-z\s]+$/;
+      const exNameRegex = /^[A-Za-z\s\-]+$/;
       if (!exNameRegex.test(exNameTrim)) {
-        return res.status(400).json({ error: `Exercise name at index ${i} cannot include numbers or symbols` });
+        return res.status(400).json({ error: `Exercise name at index ${i} can only contain letters, spaces, and hyphens` });
       }
       const s = Number(ex.sets);
       const r = Number(ex.reps);
@@ -79,7 +89,16 @@ export const createWorkout = async (req, res) => {
       }
     }
 
-    const workoutDate = date ? new Date(date) : new Date();
+    // Parse date string (YYYY-MM-DD) to local midnight
+    let workoutDate;
+    if (date && typeof date === 'string') {
+      const [year, month, day] = date.split('-').map(Number);
+      workoutDate = new Date(year, month - 1, day, 0, 0, 0, 0);
+    } else {
+      workoutDate = new Date();
+      workoutDate.setHours(0, 0, 0, 0);
+    }
+    
     const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
     // If there are existing uncompleted workouts for today, archive them to history
     const start = new Date(workoutDate);
@@ -105,6 +124,7 @@ export const createWorkout = async (req, res) => {
       exercises: normalizedExercises,
       date: workoutDate,
       day: dayNames[workoutDate.getDay()],
+      completed: false,
     });
     await workout.save();
     res.status(201).json(workout);
@@ -141,11 +161,11 @@ export const updateWorkout = async (req, res) => {
         if (!ex || typeof ex.name !== 'string' || ex.name.trim() === '') {
           return res.status(400).json({ error: `Exercise at index ${i} must have a non-empty name` });
         }
-        // exercise name should only contain letters and spaces
+        // exercise name should only contain letters, spaces, and hyphens
         const exNameTrim2 = String(ex.name).trim();
-        const exNameRegex2 = /^[A-Za-z\s]+$/;
+        const exNameRegex2 = /^[A-Za-z\s\-]+$/;
         if (!exNameRegex2.test(exNameTrim2)) {
-          return res.status(400).json({ error: `Exercise name at index ${i} cannot include numbers or symbols` });
+          return res.status(400).json({ error: `Exercise name at index ${i} can only contain letters, spaces, and hyphens` });
         }
         const s = Number(ex.sets);
         const r = Number(ex.reps);

@@ -2,7 +2,7 @@
 import mongoose from "mongoose";
 
 const exerciseSchema = new mongoose.Schema({
-  name: { type: String, required: true, trim: true, match: [/^[A-Za-z\s]+$/, 'Exercise name cannot include numbers or symbols'] },
+  name: { type: String, required: true, trim: true, match: [/^[A-Za-z\s\-]+$/, 'Exercise name can only contain letters, spaces, and hyphens'] },
   sets: { type: Number, default: 0, min: [0, 'Sets must be >= 0'] },
   reps: { type: Number, default: 0, min: [0, 'Reps must be >= 0'] },
   weight: { type: Number, default: 0, min: [0, 'Weight must be >= 0'] },
@@ -14,7 +14,7 @@ const workoutSchema = new mongoose.Schema({
   date: { type: Date, default: Date.now },
   // Day name for easier history grouping (e.g., Mon, Tue)
   day: { type: String },
-  name: { type: String, required: true, trim: true, match: [/^[A-Za-z\s]+$/, 'Workout name cannot include numbers or symbols'] },
+  name: { type: String, required: true, trim: true, match: [/^[A-Za-z\s]+$/, 'Workout name can only contain letters and spaces'] },
   exercises: { type: [exerciseSchema], default: [] },
   completed: { type: Boolean, default: false },
   completedAt: { type: Date }

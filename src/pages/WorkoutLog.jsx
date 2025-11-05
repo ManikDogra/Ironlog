@@ -10,9 +10,18 @@ export default function WorkoutLog() {
   const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
   const navigate = useNavigate();
 
+  // Get today's date in YYYY-MM-DD format (local timezone)
+  const getTodayDate = () => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
   const [name, setName] = useState("");
   const [nameError, setNameError] = useState("");
-  const [date, setDate] = useState(new Date().toISOString().slice(0, 10));
+  const [date, setDate] = useState(getTodayDate());
   const [exercises, setExercises] = useState([]);
   const [templateQuery, setTemplateQuery] = useState("");
   const [templateOpen, setTemplateOpen] = useState(false);
@@ -61,6 +70,11 @@ export default function WorkoutLog() {
       setSaveStatus("Exercise name required");
       return;
     }
+    const nameRegex = /^[A-Za-z\s\-]+$/;
+    if (!nameRegex.test(exerciseName.trim())) {
+      setSaveStatus("Exercise names can only contain letters, spaces, and hyphens");
+      return;
+    }
     const s = Number(sets);
     const r = Number(reps);
     const w = Number(weight);
@@ -99,6 +113,11 @@ export default function WorkoutLog() {
       setSaveStatus("Exercise name required");
       return;
     }
+    const nameRegex = /^[A-Za-z\s\-]+$/;
+    if (!nameRegex.test(editName.trim())) {
+      setSaveStatus("Exercise names can only contain letters, spaces, and hyphens");
+      return;
+    }
     const s = Number(editSets);
     const r = Number(editReps);
     const w = Number(editWeight);
@@ -132,6 +151,11 @@ export default function WorkoutLog() {
     for (const ex of exercises) {
       if (!ex.name || typeof ex.name !== "string" || ex.name.trim() === "") {
         setSaveStatus("Each exercise must have a name");
+        return;
+      }
+      const nameRegex = /^[A-Za-z\s\-]+$/;
+      if (!nameRegex.test(ex.name.trim())) {
+        setSaveStatus("Exercise names can only contain letters, spaces, and hyphens");
         return;
       }
       const s = Number(ex.sets);
