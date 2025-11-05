@@ -149,13 +149,12 @@ export default function Signup() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row bg-white text-black font-sans">
-      {/* Left Section */}
+    <div className="min-h-screen flex flex-col md:flex-row bg-white text-black dark:bg-gray-950 dark:text-gray-100 font-sans">      {/* Left Section */}
       <motion.div
         initial={{ x: -80, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
         transition={{ duration: 0.8 }}
-        className="flex-1 flex flex-col justify-center items-center bg-gray-50 border-r border-gray-200 p-10"
+        className="flex-1 flex flex-col justify-center items-center bg-gray-50 dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 p-10"
       >
         <motion.h1
           initial={{ opacity: 0, y: 30 }}
@@ -184,8 +183,7 @@ export default function Signup() {
         className="flex-1 flex justify-center items-center p-10"
       >
         <motion.div
-          className={`w-full max-w-md bg-white border border-gray-200 rounded-2xl shadow-sm p-8 transition-all duration-300 ${
-            // slightly transparent while loading/processing
+          className={`w-full max-w-md bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-sm p-8 transition-all duration-300 ${
             loading || statusType === "loading" ? "opacity-70" : "opacity-100"
           }`}
         >
@@ -207,7 +205,8 @@ export default function Signup() {
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="Enter your email"
                     required
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:ring-black focus:outline-none transition"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:ring-black focus:outline-none transition dark:bg-gray-800 dark:border-gray-700 dark:focus:ring-gray-400 dark:text-gray-100"
+
                   />
                 </div>
 
@@ -277,10 +276,11 @@ export default function Signup() {
                     transition={{ duration: 0.2 }}
                     className={`mt-6 text-center text-sm font-medium py-2 rounded-lg ${
                       statusType === "success"
-                        ? "text-green-600 bg-green-50 border border-green-200"
+                        ? "text-green-600 bg-green-50 border border-green-200 dark:text-green-400 dark:bg-green-950 dark:border-green-800"
                         : statusType === "error"
-                        ? "text-red-600 bg-red-50 border border-red-200"
-                        : "text-gray-700 bg-gray-50 border border-gray-200"
+                        ? "text-red-600 bg-red-50 border border-red-200 dark:text-red-400 dark:bg-red-950 dark:border-red-800"
+                        : "text-gray-700 bg-gray-50 border border-gray-200 dark:text-gray-300 dark:bg-gray-800 dark:border-gray-700"
+
                     }`}
                   >
                     {statusMessage}
@@ -300,7 +300,8 @@ export default function Signup() {
             </>
           ) : (
             <>
-              <h2 className="text-2xl font-bold text-center text-gray-800">
+              <h2 className="text-2xl font-bold text-center text-gray-800 dark:text-gray-100">
+
                 Confirm Your Account
               </h2>
 

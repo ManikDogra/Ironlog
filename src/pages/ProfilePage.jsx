@@ -69,11 +69,11 @@ export default function ProfilePage() {
   if (!profile) return <div className="p-8">No profile found. Please set up your profile.</div>;
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50">
+    <div className="flex flex-col min-h-screen bg-gray-50 text-gray-900 dark:bg-gray-900 dark:text-gray-100">
       <Header />
       <main className="flex-grow">
       <div className="p-8">
-      <div className="max-w-xl bg-white border rounded p-6">
+      <div className="max-w-xl bg-white border border-gray-200 rounded p-6 dark:bg-gray-800 dark:border-gray-700">
         <div className="flex justify-between items-center mb-4">
           <PageHeader title={"Your Profile"} />
           {!editMode && (

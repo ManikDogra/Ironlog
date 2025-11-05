@@ -1,53 +1,118 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
+import { Sun, Moon } from "lucide-react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFacebook, faTwitter, faInstagram, faYoutube } from "@fortawesome/free-brands-svg-icons";
+import {
+  faFacebook,
+  faTwitter,
+  faInstagram,
+  faYoutube,
+} from "@fortawesome/free-brands-svg-icons";
 
 export default function Welcome() {
+  const [isDark, setIsDark] = useState(false);
+
+  // Load saved theme
+  useEffect(() => {
+    const saved = localStorage.getItem("theme");
+    if (saved === "dark") {
+      document.documentElement.classList.add("dark");
+      setIsDark(true);
+    }
+  }, []);
+
+  // Toggle theme
+  const toggleTheme = () => {
+    const html = document.documentElement;
+    const newTheme = !isDark ? "dark" : "light";
+    setIsDark(!isDark);
+    if (newTheme === "dark") html.classList.add("dark");
+    else html.classList.remove("dark");
+    localStorage.setItem("theme", newTheme);
+  };
+
   return (
-    <div className="min-h-screen bg-white text-black font-sans">
+    <div className="min-h-screen bg-white text-black dark:bg-gray-950 dark:text-gray-100 font-sans transition-colors duration-300">
       {/* Header */}
       <motion.header
         initial={{ y: -80, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.8 }}
-        className="fixed top-0 w-full bg-white/80 backdrop-blur-md border-b border-gray-200 z-50 transition-all duration-300"
+        className="fixed top-0 w-full bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-800 z-50 transition-all duration-300"
       >
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
+        <div className="container mx-auto px-6 py-4 flex justify-between items-center">
           <motion.span
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.4 }}
-            className="text-2xl font-bold"
+            className="text-2xl font-bold tracking-tight"
           >
             IRONLOG
           </motion.span>
-          <div className="flex gap-4">
-            <Link to="/login">
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="px-4 py-2 hover:underline transition-all duration-300"
-              >
-                Login
-              </motion.button>
-            </Link>
-            <Link to="/signup">
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="px-4 py-2 border border-black hover:bg-black hover:text-white transition-all duration-300"
-              >
-                Signup
-              </motion.button>
-            </Link>
+
+          <div className="flex items-center gap-6">
+            {/* Theme Toggle with Lucide Icons (minimal, not flashy) */}
+            {/* Theme Toggle with Lucide Icons (wider, cleaner) */}
+            <button
+              onClick={toggleTheme}
+              aria-label="Toggle theme"
+              className={`relative w-[52px] h-6 flex items-center rounded-full cursor-pointer transition-all duration-300 ${
+                isDark ? "bg-gray-700" : "bg-gray-300"
+              }`}
+            >
+              <motion.div
+                layout
+                transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                className={`absolute w-5 h-5 rounded-full bg-white shadow-md transform transition-transform duration-300 ${
+                  isDark ? "translate-x-[29px]" : "translate-x-[2px]"
+                }`}
+              />
+              {/* Sun (left) */}
+              <div className="absolute left-[5px] flex items-center justify-center pointer-events-none">
+                <Sun
+                  size={13}
+                  className={`text-gray-600 ${
+                    isDark ? "opacity-40" : "opacity-100"
+                  } transition-opacity`}
+                />
+              </div>
+              {/* Moon (right) */}
+              <div className="absolute right-[4px] flex items-center justify-center pointer-events-none">
+                <Moon
+                  size={13}
+                  className={`text-gray-300 ${
+                    isDark ? "opacity-100" : "opacity-40"
+                  } transition-opacity`}
+                />
+              </div>
+</button>
+            <div className="flex gap-4 ml-4">
+              <Link to="/login">
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="px-4 py-2 hover:underline transition-all duration-300"
+                >
+                  Login
+                </motion.button>
+              </Link>
+              <Link to="/signup">
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="px-4 py-2 border border-black dark:border-gray-100 hover:bg-black dark:hover:bg-gray-100 hover:text-white dark:hover:text-black transition-all duration-300"
+                >
+                  Signup
+                </motion.button>
+              </Link>
+            </div>
           </div>
         </div>
       </motion.header>
 
       {/* Hero */}
-      <section className="relative min-h-screen flex items-center justify-center pt-20">
+      <section className="relative min-h-screen flex items-center justify-center pt-24">
         <div className="relative z-10 text-center max-w-3xl mx-auto px-4">
           <motion.h1
             initial={{ opacity: 0, y: 40, filter: "blur(10px)" }}
@@ -61,7 +126,7 @@ export default function Welcome() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 0.3 }}
-            className="text-lg md:text-xl text-gray-600 mb-12"
+            className="text-lg md:text-xl text-gray-600 dark:text-gray-400 mb-12"
           >
             Track your fitness journey, set goals, and crush your personal
             records with the most powerful gym tracking app.
@@ -70,7 +135,7 @@ export default function Welcome() {
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="px-6 py-3 border border-black hover:bg-black hover:text-white transition-all duration-300"
+              className="px-6 py-3 border border-black dark:border-gray-100 hover:bg-black dark:hover:bg-gray-100 hover:text-white dark:hover:text-black transition-all duration-300"
             >
               Start Your Journey
             </motion.button>
@@ -128,14 +193,14 @@ export default function Welcome() {
           >
             <div className="md:w-1/2 mb-8 md:mb-0 md:px-12">
               <h3 className="text-xl font-normal mb-4">{f.title}</h3>
-              <p className="text-gray-600">{f.desc}</p>
+              <p className="text-gray-600 dark:text-gray-400">{f.desc}</p>
             </div>
             <div className="md:w-1/2 overflow-hidden transition-transform hover:scale-[1.01]">
               <motion.img
                 whileHover={{ scale: 1.03 }}
                 src={f.img}
                 alt={f.title}
-                className="w-full h-64 object-cover grayscale"
+                className="w-full h-64 object-cover grayscale dark:opacity-90"
               />
             </div>
           </motion.div>
@@ -148,13 +213,13 @@ export default function Welcome() {
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
         viewport={{ once: true }}
-        className="py-24 bg-gray-50"
+        className="py-24 bg-gray-50 dark:bg-gray-900 transition-colors"
       >
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-2xl md:text-3xl font-normal mb-8">
             Ready to Transform Your Fitness Journey?
           </h2>
-          <p className="text-lg text-gray-600 mb-12 max-w-2xl mx-auto">
+          <p className="text-lg text-gray-600 dark:text-gray-400 mb-12 max-w-2xl mx-auto">
             Join thousands of fitness enthusiasts who are tracking their
             progress and achieving their goals with IronLog.
           </p>
@@ -162,7 +227,7 @@ export default function Welcome() {
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="px-6 py-3 border border-black hover:bg-black hover:text-white transition-all duration-300"
+              className="px-6 py-3 border border-black dark:border-gray-100 hover:bg-black dark:hover:bg-gray-100 hover:text-white dark:hover:text-black transition-all duration-300"
             >
               Get Started For Free
             </motion.button>
@@ -176,28 +241,25 @@ export default function Welcome() {
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
         viewport={{ once: true }}
-        className="bg-white py-12 border-t border-gray-200"
+        className="bg-white dark:bg-gray-900 py-12 border-t border-gray-200 dark:border-gray-800 transition-colors"
       >
         <div className="container mx-auto px-4 text-center">
           <div className="text-xl font-normal mb-8">IRONLOG</div>
           <div className="flex justify-center gap-8 mb-8">
-            <a href="#" className="text-gray-400 hover:text-black transition-colors">
-              <FontAwesomeIcon icon={faFacebook} className="text-xl" />
-            </a>
-            <a href="#" className="text-gray-400 hover:text-black transition-colors">
-              <FontAwesomeIcon icon={faTwitter} className="text-xl" />
-            </a>
-            <a href="#" className="text-gray-400 hover:text-black transition-colors">
-              <FontAwesomeIcon icon={faInstagram} className="text-xl" />
-            </a>
-            <a href="#" className="text-gray-400 hover:text-black transition-colors">
-              <FontAwesomeIcon icon={faYoutube} className="text-xl" />
-            </a>
+            {[faFacebook, faTwitter, faInstagram, faYoutube].map((icon, i) => (
+              <a
+                key={i}
+                href="#"
+                className="text-gray-400 hover:text-black dark:hover:text-white transition-colors"
+              >
+                <FontAwesomeIcon icon={icon} className="text-xl" />
+              </a>
+            ))}
           </div>
-          <div className="text-gray-600 mb-4">
+          <div className="text-gray-600 dark:text-gray-400 mb-4">
             <p>Contact: support@ironlog.com | (555) 123-4567</p>
           </div>
-          <div className="text-sm text-gray-500">
+          <div className="text-sm text-gray-500 dark:text-gray-500">
             <p>© 2025 IronLog. All rights reserved.</p>
           </div>
         </div>
