@@ -7,6 +7,9 @@ import Signup from "./pages/Signup";
 import Dashboard from "./pages/Dashboard";
 import ProfileSetup from "./pages/ProfileSetup";
 import ProfilePage from "./pages/ProfilePage";
+import TodayWorkout from "./pages/TodayWorkout";
+import History from "./pages/History";
+import WeightHistory from "./pages/WeightHistory";
 import PrivateRoute from "./components/PrivateRoute";
 import { AuthProvider } from "./context/AuthContext"; // ✅ added import
 
@@ -44,6 +47,9 @@ function App() {
               </PrivateRoute>
             }
           />
+          <Route path="/today-workout" element={<PrivateRoute><TodayWorkout/></PrivateRoute>} />
+          <Route path="/history" element={<PrivateRoute><History/></PrivateRoute>} />
+          <Route path="/weight-history" element={<PrivateRoute><WeightHistory/></PrivateRoute>} />
         </Routes>
       </div>
     </AuthProvider>

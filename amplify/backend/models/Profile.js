@@ -10,6 +10,8 @@ const profileSchema = new mongoose.Schema({
   height: { type: Number },
   // store dates (ISO) when the user logged in (one entry per day)
   loginDates: { type: [Date], default: [] },
+  // Mark whether the user has completed their profile setup.
+  profileCompleted: { type: Boolean, default: false },
   createdAt: { type: Date, default: Date.now }
 }, { collection: "Profile" });
 

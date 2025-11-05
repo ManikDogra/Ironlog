@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import PageHeader from "../components/PageHeader";
 import { useAuth } from "../context/AuthContext";
+import Header from "../components/Header";
+import Footer from "../components/Footer";
 
 export default function ProfilePage() {
   const { profile, setProfile, isAuthenticated } = useAuth();
@@ -66,10 +69,13 @@ export default function ProfilePage() {
   if (!profile) return <div className="p-8">No profile found. Please set up your profile.</div>;
 
   return (
-    <div className="p-8">
+    <div className="flex flex-col min-h-screen bg-gray-50">
+      <Header />
+      <main className="flex-grow">
+      <div className="p-8">
       <div className="max-w-xl bg-white border rounded p-6">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-2xl font-medium">Your Profile</h2>
+          <PageHeader title={"Your Profile"} />
           {!editMode && (
             <button
               onClick={handleEdit}
@@ -186,6 +192,9 @@ export default function ProfilePage() {
           </div>
         )}
       </div>
+      </div>
+      </main>
+      <Footer />
     </div>
   );
 }

@@ -8,6 +8,8 @@ import { fileURLToPath } from 'url';
 import authRoutes from "./routes/authRoutes.js";
 import profileRoutes from "./routes/profileRoutes.js";
 import workoutRoutes from "./routes/workoutRoutes.js";
+import weightRoutes from "./routes/weightRoutes.js";
+import debugRoutes from "./routes/debugRoutes.js";
 import cors from "cors";
 // Load the .env file located in this folder (amplify/backend/.env)
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -16,7 +18,7 @@ dotenv.config({ path: path.join(__dirname, '.env') });
 const app = express();
 
 // Middleware
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
 // Allow requests from the frontend and allow credentials so cookies can be cleared/set
 app.use(
   cors({
@@ -28,6 +30,9 @@ app.use(
 app.use("/auth", authRoutes);
 app.use("/profile", profileRoutes);
 app.use("/workouts", workoutRoutes);
+app.use("/weight", weightRoutes);
+// Mount dev-only debug routes (requires valid token)
+app.use("/debug", debugRoutes);
 
 
 // MongoDB connection
@@ -38,6 +43,16 @@ mongoose.connect(process.env.MONGO_URI)
 // Example route (for testing)
 app.get('/', (req, res) => {
   res.send('IronLog backend is running ✅');
+});
+
+// Health check endpoint
+app.get('/health', (req, res) => {
+  res.json({ 
+    status: 'ok',
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+    environment: process.env.NODE_ENV || 'development'
+  });
 });
 
 // Start the server
