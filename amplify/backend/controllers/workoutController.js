@@ -100,16 +100,6 @@ export const createWorkout = async (req, res) => {
     }
     
     const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-    // If there are existing uncompleted workouts for today, archive them to history
-    const start = new Date(workoutDate);
-    start.setHours(0,0,0,0);
-    const end = new Date(start);
-    end.setDate(end.getDate() + 1);
-
-    await Workout.updateMany(
-      { userSub, date: { $gte: start, $lt: end }, completed: { $ne: true } },
-      { $set: { completed: true, completedAt: new Date() } }
-    );
 
     const normalizedExercises = exs.map((ex) => ({
       name: String(ex.name).trim(),
