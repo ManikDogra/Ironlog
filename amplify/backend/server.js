@@ -19,10 +19,25 @@ const app = express();
 
 // Middleware
 app.use(express.json({ limit: '10mb' }));
+
+// Health check endpoint (must come BEFORE CORS for Beanstalk health checks)
+app.get('/health', (req, res) => {
+  res.json({ 
+    status: 'ok',
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+    environment: process.env.NODE_ENV || 'development'
+  });
+});
+
 // Allow requests from the frontend and allow credentials so cookies can be cleared/set
 app.use(
   cors({
-    origin: (origin, cb) => cb(null, origin || "http://localhost:5173"),
+    origin: [
+      "http://localhost:5173",
+      "http://localhost:3000",
+      "https://main.d1ooh0nczm0urv.amplifyapp.com"
+    ],
     credentials: true,
   })
 );
@@ -43,16 +58,6 @@ mongoose.connect(process.env.MONGO_URI)
 // Example route (for testing)
 app.get('/', (req, res) => {
   res.send('IronLog backend is running ✅');
-});
-
-// Health check endpoint
-app.get('/health', (req, res) => {
-  res.json({ 
-    status: 'ok',
-    timestamp: new Date().toISOString(),
-    uptime: process.uptime(),
-    environment: process.env.NODE_ENV || 'development'
-  });
 });
 
 // Start the server
