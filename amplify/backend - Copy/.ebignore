@@ -1,0 +1,11 @@
+# Exclude from Elastic Beanstalk deployment
+node_modules/
+.git/
+.gitignore
+*.log
+.env.local
+.DS_Store
+*.md
+.vscode/
+.idea/
+# Do NOT ignore .ebextensions - we need it!

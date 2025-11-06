@@ -1,0 +1,60 @@
+{
+  "providers": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-ironlog-dev-97a8e-authRole",
+      "UnauthRoleArn": "arn:aws:iam::706671333756:role/amplify-ironlog-dev-97a8e-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::706671333756:role/amplify-ironlog-dev-97a8e-authRole",
+      "Region": "ap-south-1",
+      "DeploymentBucketName": "amplify-ironlog-dev-97a8e-deployment",
+      "UnauthRoleName": "amplify-ironlog-dev-97a8e-unauthRole",
+      "StackName": "amplify-ironlog-dev-97a8e",
+      "StackId": "arn:aws:cloudformation:ap-south-1:706671333756:stack/amplify-ironlog-dev-97a8e/ddb2cd30-931e-11f0-b809-0aed987d2907",
+      "AmplifyAppId": "d1ooh0nczm0urv"
+    }
+  },
+  "api": {},
+  "auth": {
+    "ironloga69da5b0": {
+      "customAuth": false,
+      "dependsOn": [],
+      "frontendAuthConfig": {
+        "mfaConfiguration": "OFF",
+        "mfaTypes": [
+          "SMS"
+        ],
+        "passwordProtectionSettings": {
+          "passwordPolicyMinLength": 8,
+          "passwordPolicyCharacters": []
+        },
+        "signupAttributes": [
+          "EMAIL"
+        ],
+        "socialProviders": [],
+        "usernameAttributes": [
+          "EMAIL"
+        ],
+        "verificationMechanisms": [
+          "EMAIL"
+        ]
+      },
+      "providerPlugin": "awscloudformation",
+      "service": "Cognito",
+      "output": {
+        "UserPoolId": "ap-south-1_LKeBeMENH",
+        "AppClientIDWeb": "7j50580qnn5upjatjr96ufgn9u",
+        "AppClientID": "5ql75jhind3n4k6cv8u8d40cjf",
+        "IdentityPoolId": "ap-south-1:6cd7267f-5a94-41a9-ac85-da11f41ad6ba",
+        "UserPoolArn": "arn:aws:cognito-idp:ap-south-1:706671333756:userpool/ap-south-1_LKeBeMENH",
+        "IdentityPoolName": "ironloga69da5b0_identitypool_a69da5b0__dev",
+        "UserPoolName": "ironloga69da5b0_userpool_a69da5b0"
+      },
+      "lastPushTimeStamp": "2025-11-05T21:28:25.883Z",
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-ironlog-dev-97a8e-deployment/amplify-cfn-templates/auth/ironloga69da5b0-cloudformation-template.json",
+        "logicalId": "authironloga69da5b0"
+      },
+      "lastPushDirHash": "5tEi/24hqWH5vs5/nSo8brLo4oA="
+    }
+  },
+  "function": {}
+}
