@@ -18,12 +18,13 @@ const app = express();
 // Middleware
 app.use(express.json({ limit: '10mb' }));
 
-// CORS - allow all Vercel domains
+// CORS - allow all requests
 app.use(cors({
   origin: true,
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  optionsSuccessStatus: 200
 }));
 
 // Health check
@@ -42,23 +43,38 @@ app.use('/workouts', workoutRoutes);
 app.use('/weight', weightRoutes);
 app.use('/debug', debugRoutes);
 
-// MongoDB connection (only once per function)
+// MongoDB connection
 let mongoConnected = false;
 
 const connectMongo = async () => {
   if (mongoConnected) return;
   try {
-    await mongoose.connect(process.env.MONGO_URI);
+    await mongoose.connect(process.env.MONGO_URI, {
+      serverSelectionTimeoutMS: 10000,
+      socketTimeoutMS: 45000
+    });
     mongoConnected = true;
-    console.log('✅ Connected to MongoDB');
+    console.log('✅ MongoDB connected');
   } catch (err) {
-    console.error('❌ MongoDB error:', err);
-    throw err;
+    console.error('❌ MongoDB error:', err.message);
+    mongoConnected = false;
   }
 };
 
-// Main handler
+// Vercel serverless handler
 export default async (req, res) => {
-  await connectMongo();
-  app(req, res);
+  // Handle preflight
+  if (req.method === 'OPTIONS') {
+    res.status(200).end();
+    return;
+  }
+
+  try {
+    await connectMongo();
+  } catch (err) {
+    console.error('Failed to connect to MongoDB:', err);
+  }
+
+  // Route the request through Express
+  return app(req, res);
 };
