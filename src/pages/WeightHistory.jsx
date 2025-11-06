@@ -20,7 +20,7 @@ export default function WeightHistory() {
     (async () => {
       try {
         const res = await fetch(
-          `${import.meta.env.VITE_API_URL || "http://localhost:5000"}/weight/history?page=${page}&limit=${limit}&days=365`,
+          `${import.meta.env.VITE_API_URL || "/api"}/weight/history?page=${page}&limit=${limit}&days=365`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         if (res.ok) {
@@ -45,7 +45,7 @@ export default function WeightHistory() {
     try {
       const dateStr = new Date(date).toISOString().slice(0, 10);
       const res = await fetch(
-        `${import.meta.env.VITE_API_URL || "http://localhost:5000"}/weight/${dateStr}`,
+        `${import.meta.env.VITE_API_URL || "/api"}/weight/${dateStr}`,
         { method: "DELETE", headers: { Authorization: `Bearer ${token}` } }
       );
       if (res.ok) {

@@ -30,7 +30,7 @@ export default function Signup() {
     return pwd.length >= minLength && hasUpper && hasLower && hasNumber && hasSymbol;
   };
 
-  const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:5000";
+  const API_URL = import.meta.env.VITE_API_URL ?? "/api";
 
   const handleSignup = async (e) => {
     e.preventDefault();

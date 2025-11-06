@@ -18,7 +18,7 @@ export default function History() {
   useEffect(() => {
     (async () => {
       try {
-        const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/workouts/history?page=1&limit=50`, {
+        const res = await fetch(`${import.meta.env.VITE_API_URL || '/api'}/workouts/history?page=1&limit=50`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         if (res.ok) {
@@ -45,7 +45,7 @@ export default function History() {
     setDeleting(true);
     try {
       if (confirmModal.type === 'single') {
-        const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/workouts/${confirmModal.workoutId}`, {
+        const res = await fetch(`${import.meta.env.VITE_API_URL || '/api'}/workouts/${confirmModal.workoutId}`, {
           method: 'DELETE',
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -55,7 +55,7 @@ export default function History() {
         }
       } else if (confirmModal.type === 'all') {
         const deletePromises = history.map(w =>
-          fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/workouts/${w._id}`, {
+          fetch(`${import.meta.env.VITE_API_URL || '/api'}/workouts/${w._id}`, {
             method: 'DELETE',
             headers: { Authorization: `Bearer ${token}` },
           })

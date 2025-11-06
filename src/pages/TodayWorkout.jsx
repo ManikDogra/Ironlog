@@ -20,7 +20,7 @@ export default function TodayWorkout() {
     (async () => {
       try {
         const res = await fetch(
-          `${import.meta.env.VITE_API_URL || "http://localhost:5000"}/workouts/today`,
+          `${import.meta.env.VITE_API_URL || "/api"}/workouts/today`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }
@@ -46,7 +46,7 @@ export default function TodayWorkout() {
     );
     try {
       const res = await fetch(
-        `${import.meta.env.VITE_API_URL || "http://localhost:5000"}/workouts/${workout._id}`,
+        `${import.meta.env.VITE_API_URL || "/api"}/workouts/${workout._id}`,
         {
           method: "PUT",
           headers: {
@@ -70,7 +70,7 @@ export default function TodayWorkout() {
     setIsCompleting(true);
     try {
       const res = await fetch(
-        `${import.meta.env.VITE_API_URL || "http://localhost:5000"}/workouts/${workout._id}/complete`,
+        `${import.meta.env.VITE_API_URL || "/api"}/workouts/${workout._id}/complete`,
         {
           method: "POST",
           headers: {

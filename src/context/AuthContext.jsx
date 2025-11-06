@@ -57,7 +57,7 @@ export const AuthProvider = ({ children }) => {
         // failed to decode token locally — fall back to server validation below
       }
       try {
-        const res = await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:5000"}/profile`, {
+        const res = await fetch(`${import.meta.env.VITE_API_URL || "/api"}/profile`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         if (res.status === 401) {
@@ -107,7 +107,7 @@ export const AuthProvider = ({ children }) => {
     // fetch profile after login
     (async () => {
       try {
-        const res = await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:5000"}/profile`, {
+        const res = await fetch(`${import.meta.env.VITE_API_URL || "/api"}/profile`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         if (res.status === 404) {
@@ -126,7 +126,7 @@ export const AuthProvider = ({ children }) => {
           setProfile(body.profile || null);
           // record this login on the server so dashboard streak can be computed
           try {
-            await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:5000"}/profile/login`, {
+            await fetch(`${import.meta.env.VITE_API_URL || "/api"}/profile/login`, {
               method: "POST",
               headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
             });

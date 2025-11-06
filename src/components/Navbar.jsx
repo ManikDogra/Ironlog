@@ -10,7 +10,7 @@ export default function Navbar() {
 
   const handleLogout = () => {
     logout();
-    fetch(`${import.meta.env.VITE_API_URL || "http://localhost:5000"}/auth/logout`, {
+    fetch(`${import.meta.env.VITE_API_URL || "/api"}/auth/logout`, {
       method: "POST",
       credentials: "include",
     }).catch((err) => console.warn("logout request failed", err));

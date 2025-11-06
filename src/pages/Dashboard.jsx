@@ -124,7 +124,7 @@ useEffect(() => {
     try {
       const res = await fetch(
         `${
-          import.meta.env.VITE_API_URL || "http://localhost:5000"
+          import.meta.env.VITE_API_URL || "/api"
         }/workouts`,
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -145,7 +145,7 @@ useEffect(() => {
     try {
       const res = await fetch(
         `${
-          import.meta.env.VITE_API_URL || "http://localhost:5000"
+          import.meta.env.VITE_API_URL || "/api"
         }/workouts/prs`,
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -167,7 +167,7 @@ useEffect(() => {
     try {
       const res = await fetch(
         `${
-          import.meta.env.VITE_API_URL || "http://localhost:5000"
+          import.meta.env.VITE_API_URL || "/api"
         }/workouts/pr/${encodeURIComponent(exerciseName)}?page=1&limit=200`,
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -203,7 +203,7 @@ useEffect(() => {
     try {
       const res = await fetch(
         `${
-          import.meta.env.VITE_API_URL || "http://localhost:5000"
+          import.meta.env.VITE_API_URL || "/api"
         }/workouts/today`,
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -226,7 +226,7 @@ useEffect(() => {
     try {
       const res = await fetch(
         `${
-          import.meta.env.VITE_API_URL || "http://localhost:5000"
+          import.meta.env.VITE_API_URL || "/api"
         }/workouts/history?page=1&limit=1`,
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -286,7 +286,7 @@ useEffect(() => {
     try {
       const res = await fetch(
         `${
-          import.meta.env.VITE_API_URL || "http://localhost:5000"
+          import.meta.env.VITE_API_URL || "/api"
         }/weight/history?days=7&limit=7`,
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -317,7 +317,7 @@ useEffect(() => {
     try {
       const res = await fetch(
         `${
-          import.meta.env.VITE_API_URL || "http://localhost:5000"
+          import.meta.env.VITE_API_URL || "/api"
         }/weight`,
         {
           method: "POST",
@@ -345,7 +345,7 @@ useEffect(() => {
       const token = localStorage.getItem("token");
       const res = await fetch(
         `${
-          import.meta.env.VITE_API_URL || "http://localhost:5000"
+          import.meta.env.VITE_API_URL || "/api"
         }/profile`,
         {
           method: profile ? "PUT" : "POST",
@@ -380,7 +380,7 @@ useEffect(() => {
     try {
       const res = await fetch(
         `${
-          import.meta.env.VITE_API_URL || "http://localhost:5000"
+          import.meta.env.VITE_API_URL || "/api"
         }/weight/today`,
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -397,7 +397,7 @@ useEffect(() => {
     try {
       const res = await fetch(
         `${
-          import.meta.env.VITE_API_URL || "http://localhost:5000"
+          import.meta.env.VITE_API_URL || "/api"
         }/workouts/${justCompletedId}/undo`,
         {
           method: "POST",

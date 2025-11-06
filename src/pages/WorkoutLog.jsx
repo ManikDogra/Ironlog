@@ -169,7 +169,7 @@ export default function WorkoutLog() {
 
     try {
       const res = await fetch(
-        `${import.meta.env.VITE_API_URL || "http://localhost:5000"}/workouts`,
+        `${import.meta.env.VITE_API_URL || "/api"}/workouts`,
         {
           method: "POST",
           headers: {

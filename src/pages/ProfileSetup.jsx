@@ -42,7 +42,7 @@ export default function ProfileSetup() {
     setStatus("");
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:5000"}/profile`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || "/api"}/profile`, {
         method: profile ? "PUT" : "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({ name, weight: Number(weight), gender, goal, age: Number(age), height: Number(height) }),
