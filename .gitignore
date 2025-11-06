@@ -43,4 +43,5 @@ amplify-gradle-config.json
 amplifytools.xcconfig
 .secret-*
 **.sample
+# aws-exports.js is needed for production builds
 #amplify-do-not-edit-end
