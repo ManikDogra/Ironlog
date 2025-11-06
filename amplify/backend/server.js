@@ -46,6 +46,31 @@ app.use(
   })
 );
 
+// Extra safety: explicitly respond to preflight (OPTIONS) requests and
+// ensure CORS headers are present even if a proxy or host attempts a redirect.
+// This avoids "Redirect is not allowed for a preflight request" in browsers.
+app.use((req, res, next) => {
+  const allowed = [
+    'http://localhost:5173',
+    'http://localhost:3000',
+    'https://main.d1ooh0nczm0urv.amplifyapp.com',
+    'https://ironlog-three.vercel.app',
+    'https://ironlog.vercel.app'
+  ];
+  const origin = req.headers.origin;
+  if (origin && allowed.includes(origin)) {
+    res.header('Access-Control-Allow-Origin', origin);
+  }
+  res.header('Access-Control-Allow-Credentials', 'true');
+  res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  // Immediately handle preflight requests
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(204);
+  }
+  next();
+});
+
 app.use("/auth", authRoutes);
 app.use("/profile", profileRoutes);
 app.use("/workouts", workoutRoutes);
