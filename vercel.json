@@ -43,8 +43,6 @@
     }
   ],
   "env": {
-    "MONGO_URI": "@mongo_uri",
-    "PORT": "3000",
     "NODE_ENV": "production",
     "COGNITO_REGION": "ap-south-1",
     "COGNITO_USER_POOL_ID": "ap-south-1_LKeBeMENH",
