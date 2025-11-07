@@ -30,7 +30,12 @@ export default function WeightModal({ open, onSubmit, onClose }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="w-full max-w-sm bg-white border border-gray-200 rounded-2xl shadow-sm p-8">
+      {/* prevent clicks on backdrop from reaching underlying elements */}
+      <div
+        className="w-full max-w-sm bg-white border border-gray-200 rounded-2xl shadow-sm p-8"
+        onClick={(e) => e.stopPropagation()}
+        onMouseDown={(e) => e.stopPropagation()}
+      >
         <h2 className="text-2xl font-medium mb-4">Add Today's Weight</h2>
         <p className="text-sm text-gray-600 mb-4">Enter your current weight to track your progress.</p>
         <div className="mb-4">
@@ -40,8 +45,13 @@ export default function WeightModal({ open, onSubmit, onClose }) {
             step="0.1"
             value={weight}
             onChange={(e) => { setWeight(e.target.value); setError(""); }}
+            autoFocus
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') handleSubmit();
+            }}
             placeholder="e.g., 75.5"
-            className="w-full px-3 py-2 border rounded"
+            aria-label="Weight (kg)"
+            className="w-full px-3 py-2 border rounded text-black placeholder-gray-400"
           />
           {error && <div className="text-sm text-red-600 mt-1">{error}</div>}
         </div>
